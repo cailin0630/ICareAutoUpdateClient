@@ -222,7 +222,8 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _mainTitle = value;
-                RaisePropertyChanged(nameof(MainTitle));
+                //RaisePropertyChanged(nameof(MainTitle));
+                OnPropertyChanged();
             }
         }
 
@@ -234,7 +235,8 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _mainLogo = value;
-                RaisePropertyChanged(nameof(MainLogo));
+                //RaisePropertyChanged(nameof(MainLogo));
+                OnPropertyChanged();
             }
         }
 
@@ -246,7 +248,8 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _mainPackageDownload = value;
-                RaisePropertyChanged(nameof(MainPackageDownload));
+                //RaisePropertyChanged(nameof(MainPackageDownload));
+                OnPropertyChanged();
             }
         }
 
@@ -258,7 +261,8 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _publibPackageDownload = value;
-                RaisePropertyChanged(nameof(PublibPackageDownload));
+                //RaisePropertyChanged(nameof(PublibPackageDownload));
+                OnPropertyChanged();
             }
         }
 
@@ -270,7 +274,8 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _mainPackageProgressPercentage = value;
-                RaisePropertyChanged(nameof(MainPackageProgressPercentage));
+                //RaisePropertyChanged(nameof(MainPackageProgressPercentage));
+                OnPropertyChanged();
             }
         }
 
@@ -282,7 +287,8 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _publibPackageProgressPercentage = value;
-                RaisePropertyChanged(nameof(PublibPackageProgressPercentage));
+                //RaisePropertyChanged(nameof(PublibPackageProgressPercentage));
+                OnPropertyChanged();
             }
         }
 
@@ -294,7 +300,8 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _tipMessage = value;
-                RaisePropertyChanged(nameof(TipMessage));
+                //RaisePropertyChanged(nameof(TipMessage));
+                OnPropertyChanged();
             }
         }
 
