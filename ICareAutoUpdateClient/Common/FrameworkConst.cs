@@ -5,14 +5,16 @@ namespace ICareAutoUpdateClient.Common
 {
     public class FrameworkConst
     {
+
+        public static string TempFolder= Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Temp");
         public const string MainPackageName = "MainPackage.7z";
 
         public const string PubLibPackageName = "PubLibPackage.exe";
 
-        public readonly string MainPackagePath = 
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, MainPackageName);
+        public static string MainPackagePath = 
+            Path.Combine(TempFolder, MainPackageName);
 
-        public readonly string PubLibPackagePath =
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, PubLibPackageName);
+        public static string PubLibPackagePath =
+            Path.Combine(TempFolder, PubLibPackageName);
     }
 }

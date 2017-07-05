@@ -1,9 +1,6 @@
-﻿using ICareAutoUpdateClient.Common;
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Windows;
-using Newtonsoft.Json;
 
 namespace ICareAutoUpdateTest
 {
@@ -15,38 +12,21 @@ namespace ICareAutoUpdateTest
         public MainWindow()
         {
             InitializeComponent();
-            var exeName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ICareAutoUpdateClient.exe");
-            var exeDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ICareAutoUpdateClient");
 
-            var message = new Message
-            {
-                UpdateUrl = @"F:\AutoUpdate.rar",
-                LocalUrl = @"D:\Code\SVN\IV007_IDcube\branches\v1.0.0.0\Source\Build\Debug"
-            };
-            var jsonStr = JsonConvert.SerializeObject(message);
-            //var args = @"D:\Code\SVN\IV007_IDcube\branches\v1.0.0.0\Source\Build\Debug" + " " + @"F:\AutoUpdate.rar" +
-            //           " " + @"F:\publibUpdate.rar";
-            var args = "11";
-            //ProcessProvide.StartProcess(exeName, exeDir, args);
+            var args =
+                $"{@"D:\Code\SVN\IV007_IDcube\branches\v1.0.0.0\Source\Build\Debug"} {@"F:\AutoUpdate.rar"} { @"F:\公共库2.2.1.0623.exe"}";
 
             var pro = new Process
             {
                 StartInfo =
                 {
-                    FileName = exeName,
-                    WorkingDirectory = exeDir,
+                    FileName = "ICareAutoUpdate\\ICareAutoUpdateClient.exe",
+
                     Arguments = args
                 }
             };
-            
+
             pro.Start();
-            pro.WaitForExit();
-
-        }
-
-        private void Pro_Exited(object sender, EventArgs e)
-        {
-            MessageBox.Show("Pro_Exited ");
         }
     }
 }

@@ -20,87 +20,84 @@ namespace ICareAutoUpdateClient.ViewModel
         {
             Task.Factory.StartNew(StartUpdate);
         }
-        
+
         private static Message _message;
 
         private void StartUpdate()
         {
-            Logger.Main.Info("程序启动完成");
-            //var pargs = Environment.GetCommandLineArgs();
-            //if (pargs.Length < 4)
-            //{
-            //    AppendText($"启动参数错误:{pargs[0]}");
-            //    ShutDownApp();
-            //    return;
-            //}
-
             try
             {
-                //_message = new Message
-                //{
-                //    LocalUrl = pargs[1].TrimEnd('\\'),
-                //    UpdateUrl = pargs[2],
-                //    PublicLibUrl = pargs[3]
-                //};
-                _message = new Message
+                Logger.Main.Info("程序启动完成");
+                var pargs = Environment.GetCommandLineArgs();
+                if (pargs.Length < 4)
                 {
-                    LocalUrl = @"D:\Code\SVN\IV007_IDcube\branches\v1.0.0.0\Source\Build\Debug",
-                    UpdateUrl = @"F:\AutoUpdate.rar",
-                    PublicLibUrl = @"F:\公共库 2.2.1.0623.exe"
-                };
-                Logger.Main.Info($"获取命令行参数:{JsonConvert.SerializeObject(_message)}");
-                if (_message.UpdateUrl == "-")
-                {
-                    MainPackageDownload = true;
+                    AppendText($"启动参数错误:{pargs[0]}");
+                    ShutDownApp();
+                    return;
                 }
-                if (_message.PublicLibUrl == "-")
+
+                try
                 {
-                    PublibPackageDownload = true;
+                    _message = new Message
+                    {
+                        LocalUrl = pargs[1].TrimEnd('\\'),
+                        UpdateUrl = pargs[2],
+                        PublicLibUrl = pargs[3]
+                    };
+
+                    Logger.Main.Info($"获取命令行参数:{JsonConvert.SerializeObject(_message)}");
+                    if (_message.UpdateUrl == "-")
+                    {
+                        MainPackageDownload = true;
+                    }
+                    if (_message.PublicLibUrl == "-")
+                    {
+                        PublibPackageDownload = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Main.Error($"参数解析异常:{ex.Message} {ex.StackTrace}");
+                    AppendText($"启动参数错误:{pargs[1]}\n{pargs[2]}");
+                    ShutDownApp();
+                    return;
+                }
+
+                AppendText("开始更新...");
+                ProcessProvide.KillProcess("IDCube");
+                TryDeleteTempFile();
+
+                //todo 下载主程序更新包
+                if (_message.UpdateUrl != "-")
+                {
+                    var updateUrl = new Uri(_message.UpdateUrl);
+                    var webclient = new WebProvide
+                    {
+                        DownloadProgressChangedAction = MainPackage_DownloadProgressChanged,
+                        DownloadFileCompletedAction = MainPackage_DownloadFileCompleted
+                    };
+                    webclient.DownLoad(updateUrl, FrameworkConst.MainPackagePath);
+                }
+
+                //TODO 下载公共库更新包
+                if (_message.PublicLibUrl != "-")
+                {
+                    var pubLibUrl = new Uri(_message.PublicLibUrl);
+                    var webclient = new WebProvide
+                    {
+                        DownloadProgressChangedAction = PubLibPackage_DownloadProgressChanged,
+                        DownloadFileCompletedAction = PubLibPackage_DownloadFileCompleted
+                    };
+
+                    webclient.DownLoad(pubLibUrl, FrameworkConst.PubLibPackagePath);
                 }
             }
             catch (Exception ex)
             {
-                Logger.Main.Error($"参数解析异常:{ex.Message} {ex.StackTrace}");
-                //AppendText($"启动参数错误:{pargs[1]}\n{pargs[2]}");
+                Logger.Main.Error($"更新异常:{ex.Message} {ex.StackTrace}");
+                AppendText($"更新异常:{ex.Message}");
                 ShutDownApp();
                 return;
-            }
-
-            AppendText("开始更新...");
-            ProcessProvide.KillProcess("IDCube");
-
-            if (File.Exists(Path.Combine(_message.LocalUrl, FrameworkConst.MainPackageName)))
-            {
-                File.Delete(Path.Combine(_message.LocalUrl, FrameworkConst.MainPackageName));
-            }
-            if (File.Exists(Path.Combine(_message.LocalUrl, FrameworkConst.PubLibPackageName)))
-            {
-                File.Delete(Path.Combine(_message.LocalUrl, FrameworkConst.PubLibPackageName));
-            }
-
-            //todo 下载主程序更新包
-            if (_message.UpdateUrl != "-")
-            {
-                var updateUrl = new Uri(_message.UpdateUrl);
-                var webclient = new WebProvide
-                {
-                    DownloadProgressChangedAction = MainPackage_DownloadProgressChanged,
-                    DownloadFileCompletedAction = MainPackage_DownloadFileCompleted
-                };
-                webclient.DownLoad(updateUrl, FrameworkConst.MainPackageName);
-            }
-
-            //TODO 下载公共库更新包
-            if (_message.PublicLibUrl != "-")
-            {
-                var pubLibUrl = new Uri(_message.PublicLibUrl);
-                var webclient = new WebProvide
-                {
-                    DownloadProgressChangedAction = PubLibPackage_DownloadProgressChanged,
-                    DownloadFileCompletedAction = PubLibPackage_DownloadFileCompleted
-                };
-
-                webclient.DownLoad(pubLibUrl, FrameworkConst.PubLibPackageName);
             }
         }
 
@@ -129,13 +126,14 @@ namespace ICareAutoUpdateClient.ViewModel
             {
                 StartInfo =
                 {
-                    FileName = Path.Combine(_message.LocalUrl, FrameworkConst.PubLibPackageName),
+                    FileName = FrameworkConst.PubLibPackagePath,
                 }
             };
 
             pro.Start();
             pro.WaitForExit();
             PublibPackageDownload = true;
+            AppendText("公共库更新成功...");
             Do();
         }
 
@@ -144,7 +142,7 @@ namespace ICareAutoUpdateClient.ViewModel
             //todo 下载文件完成后解压更新
             AppendText("主程序更新下载完成...");
 
-            AppendText(!ZipHelper.UnZipPath(Path.Combine(_message.LocalUrl, FrameworkConst.MainPackageName),
+            AppendText(!ZipHelper.UnZipPath(FrameworkConst.MainPackagePath,
                 _message.LocalUrl)
                 ? "主程序更新失败,原因:解压覆盖失败..."
                 : "主程序更新成功,解压覆盖完成...");
@@ -166,7 +164,7 @@ namespace ICareAutoUpdateClient.ViewModel
         {
             lock (new object())
             {
-                if (!_mainPackageDownload || !_publibPackageDownload) return;
+                if (!MainPackageDownload || !PublibPackageDownload) return;
                 StartMainProcess();
                 ShutDownApp();
             }
@@ -174,11 +172,21 @@ namespace ICareAutoUpdateClient.ViewModel
 
         private void StartMainProcess()
         {
-            var exeName = Path.Combine(_message.LocalUrl, "IDCube.exe");
-            var exeDir = Path.Combine(_message.LocalUrl, "IDCube");
+            try
+            {
+                var exeName = Path.Combine(_message.LocalUrl, "IDCube.exe");
+                var exeDir = Path.Combine(_message.LocalUrl, "IDCube");
 
-            ProcessProvide.StartProcess(exeName, exeDir);
-            AppendText("启动目标程序成功...");
+                ProcessProvide.StartProcess(exeName, exeDir);
+                AppendText("启动目标程序成功...");
+            }
+            catch (Exception ex)
+            {
+                Logger.Main.Error($"启动主程序异常:{ex.Message} {ex.StackTrace}");
+                AppendText("启动目标程序异常...");
+            }
+           
+          
         }
 
         private void ShutDownApp()
@@ -188,7 +196,20 @@ namespace ICareAutoUpdateClient.ViewModel
             {
                 App.Current.Shutdown();
             }));
-            
+        }
+
+        private void TryDeleteTempFile()
+        {
+            try
+            {
+                if (!Directory.Exists(FrameworkConst.TempFolder))
+                    Directory.CreateDirectory(FrameworkConst.TempFolder);
+                File.Delete(FrameworkConst.MainPackagePath);
+                File.Delete(FrameworkConst.PubLibPackagePath);
+            }
+            catch
+            {
+            }
         }
 
         #region MyRegion

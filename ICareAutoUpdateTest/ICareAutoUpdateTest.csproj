@@ -95,11 +95,5 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ICareAutoUpdateClient\ICareAutoUpdateClient.csproj">
-      <Project>{2c639567-0027-45f5-a1c4-2ea3ebe5a9e5}</Project>
-      <Name>ICareAutoUpdateClient</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
