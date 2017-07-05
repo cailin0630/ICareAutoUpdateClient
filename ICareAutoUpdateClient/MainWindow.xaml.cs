@@ -21,9 +21,11 @@ namespace ICareAutoUpdateClient
         public MainWindow()
         {
             InitializeComponent();
+            
             Icon = new BitmapImage(new Uri(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Image\\MainLogo.jpg")));
             Task.Factory.StartNew(StartUpdate);
             Logger.Main.Info("程序启动完成");
+            
         }
 
         private static Message _message;
@@ -31,14 +33,9 @@ namespace ICareAutoUpdateClient
         private bool _publibPackageDownload;
        
 
-        public void StartUpdate()
+        private void StartUpdate()
         {
-            //_message = new Message
-            //{
-            //    LocalUrl = @"D:\Code\SVN\IV007_IDcube\branches\v1.0.0.0\Source\Build\Debug",
-            //    UpdateUrl = @"F:\AutoUpdate.rar",
-            //    PublicLibUrl = @"F:\公共库 2.2.1.0623.exe"
-            //};
+            
 
             var pargs = Environment.GetCommandLineArgs();
             if (pargs.Length < 4)
@@ -85,13 +82,13 @@ namespace ICareAutoUpdateClient
             AppendText("开始更新...");
             ProcessProvide.KillProcess("IDCube");
 
-            if (File.Exists(Path.Combine(_message.LocalUrl, WebProvide.MainPackageName)))
+            if (File.Exists(Path.Combine(_message.LocalUrl, FrameworkConst.MainPackageName)))
             {
-                File.Delete(Path.Combine(_message.LocalUrl, WebProvide.MainPackageName));
+                File.Delete(Path.Combine(_message.LocalUrl, FrameworkConst.MainPackageName));
             }
-            if (File.Exists(Path.Combine(_message.LocalUrl, WebProvide.PubLibPackageName)))
+            if (File.Exists(Path.Combine(_message.LocalUrl, FrameworkConst.PubLibPackageName)))
             {
-                File.Delete(Path.Combine(_message.LocalUrl, WebProvide.PubLibPackageName));
+                File.Delete(Path.Combine(_message.LocalUrl, FrameworkConst.PubLibPackageName));
             }
 
             //todo 下载主程序更新包
@@ -103,7 +100,7 @@ namespace ICareAutoUpdateClient
                     DownloadProgressChangedAction = MainPackage_DownloadProgressChanged,
                     DownloadFileCompletedAction = MainPackage_DownloadFileCompleted
                 };
-                webclient.DownLoad(updateUrl, WebProvide.MainPackageName);
+                webclient.DownLoad(updateUrl, FrameworkConst.MainPackageName);
             }
 
             //TODO 下载公共库更新包
@@ -115,8 +112,8 @@ namespace ICareAutoUpdateClient
                     DownloadProgressChangedAction = PubLibPackage_DownloadProgressChanged,
                     DownloadFileCompletedAction = PubLibPackage_DownloadFileCompleted
                 };
-                //WebProvide.PubLibPackageName = Path.GetFileName(_message.PublicLibUrl);
-                webclient.DownLoad(pubLibUrl, WebProvide.PubLibPackageName);
+               
+                webclient.DownLoad(pubLibUrl, FrameworkConst.PubLibPackageName);
             }
         }
 
@@ -153,7 +150,7 @@ namespace ICareAutoUpdateClient
             {
                 StartInfo =
                 {
-                    FileName = Path.Combine(_message.LocalUrl, WebProvide.PubLibPackageName),
+                    FileName = Path.Combine(_message.LocalUrl, FrameworkConst.PubLibPackageName),
                 }
             };
 
@@ -168,7 +165,7 @@ namespace ICareAutoUpdateClient
             //todo 下载文件完成后解压更新
             AppendText("主程序更新下载完成...");
 
-            AppendText(!ZipHelper.UnZipPath(Path.Combine(_message.LocalUrl, WebProvide.MainPackageName),
+            AppendText(!ZipHelper.UnZipPath(Path.Combine(_message.LocalUrl, FrameworkConst.MainPackageName),
                 _message.LocalUrl)
                 ? "主程序更新失败,原因:解压覆盖失败..."
                 : "主程序更新成功,解压覆盖完成...");

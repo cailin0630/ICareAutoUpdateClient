@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Linq;
-using ICareAutoUpdateClient.Log;
 
 namespace ICareAutoUpdateClient.Common
 {
@@ -15,12 +13,9 @@ namespace ICareAutoUpdateClient.Common
                     pro.Kill();
             }
             return true;
-            //return (from pro in allProc
-            //        where pro.ProcessName == destProcessName || pro.ProcessName == $"{destProcessName}.vshost"
-            //        select pro.CloseMainWindow()).FirstOrDefault();
         }
 
-        public static bool StartProcess(string fileName, string workingDirectory,string args="")
+        public static bool StartProcess(string fileName, string workingDirectory, string args = "")
         {
             var pro = new Process
             {
