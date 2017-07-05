@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ICareAutoUpdateClient"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="ICare.AutoUpdateClient"
@@ -15,23 +14,29 @@
         Background="Transparent"
         AllowsTransparency="True"
         OpacityMask="White"
-        xmlns:userControls="clr-namespace:ICareAutoUpdateClient.UserControls">
-
+        xmlns:userControls="clr-namespace:ICareAutoUpdateClient.UserControls"
+        xmlns:converters="clr-namespace:ICareAutoUpdateClient.Converter"
+        Icon="{Binding MainLogo}"
+        DataContext="{Binding Source={StaticResource Locator},Path=Main}">
+    
     <Window.Resources>
-        <Style  TargetType="TextBlock">
-            <Setter Property="Foreground" Value="Chartreuse" />
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
-            <Setter Property="VerticalAlignment" Value="Center"></Setter>
-            <Setter Property="Margin" Value="10"></Setter>
-        </Style>
-        <Style TargetType="ProgressBar">
-            <Setter Property="Height" Value="30"></Setter>
-            <Setter Property="Width" Value="300"></Setter>
-            <Setter Property="BorderThickness" Value="1"></Setter>
-            <Setter Property="BorderBrush" Value="Chartreuse"></Setter>
-            <Setter Property="Background" Value="Transparent"></Setter>
-        </Style>
+        <ResourceDictionary>
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></converters:BooleanToVisibilityConverter>
+            <Style  TargetType="TextBlock">
+                <Setter Property="Foreground" Value="Chartreuse" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Margin" Value="10"></Setter>
+            </Style>
+            <Style TargetType="ProgressBar">
+                <Setter Property="Height" Value="30"></Setter>
+                <Setter Property="Width" Value="300"></Setter>
+                <Setter Property="BorderThickness" Value="1"></Setter>
+                <Setter Property="BorderBrush" Value="Chartreuse"></Setter>
+                <Setter Property="Background" Value="Transparent"></Setter>
+            </Style>
+        </ResourceDictionary>
     </Window.Resources>
     <Border
 
@@ -41,11 +46,8 @@
                 BorderBrush="CornflowerBlue">
         <StackPanel>
             <Border>
-                <TextBlock Text="ICare.AutoUpdateClient"
-                               HorizontalAlignment="Center"
-                               Foreground="Chartreuse"
-                               VerticalAlignment="Center"
-                               FontSize="20">
+                <TextBlock Text="{Binding MainTitle}"
+                           FontSize="20">
                 </TextBlock>
             </Border>
             <userControls:LoadCircle></userControls:LoadCircle>
@@ -54,17 +56,29 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <StackPanel Name="MainStackPanel" Grid.Row="0"
-                            Orientation="Horizontal">
+                <StackPanel Name="MainStackPanel"
+                            Grid.Row="0"
+                            Orientation="Horizontal"
+                            Visibility="{Binding MainPackageDownload,Converter={StaticResource BooleanToVisibilityConverter},ConverterParameter=test}">
                     <TextBlock Text="主程序更新包：" />
-                    <ProgressBar Name="MainProgressBar" />
-                    <TextBlock Name="MainTextBlock" Text="0%"></TextBlock>
+                    <ProgressBar Name="MainProgressBar"
+                                 Value="{Binding MainPackageProgressPercentage}" />
+                    <TextBlock Name="MainTextBlock">
+                        <Run Text="{Binding PublibPackageProgressPercentage}"></Run>
+                        <Run>%</Run>
+                    </TextBlock>
                 </StackPanel>
-                <StackPanel Name="PublicStackPanel"  Grid.Row="1"
-                            Orientation="Horizontal">
+                <StackPanel Name="PublicStackPanel"
+                            Grid.Row="1"
+                            Orientation="Horizontal"
+                            Visibility="{Binding PublibPackageDownload,Converter={StaticResource BooleanToVisibilityConverter},ConverterParameter=test}">
                     <TextBlock Text="公共库更新包：" />
-                    <ProgressBar Name="PublibProgressBar" />
-                    <TextBlock Name="PublibTextBlock" Text="0%"></TextBlock>
+                    <ProgressBar Name="PublibProgressBar"
+                                 Value="{Binding PublibPackageProgressPercentage}" />
+                    <TextBlock Name="PublibTextBlock">
+                        <Run Text="{Binding PublibPackageProgressPercentage}"></Run>
+                        <Run>%</Run>
+                    </TextBlock>
                 </StackPanel>
             </Grid>
 
@@ -76,7 +90,8 @@
                     BorderThickness="0"
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Center"
-                    AutoWordSelection="True" />
+                    AutoWordSelection="True"
+                    Text="{Binding TipMessage}" />
         </StackPanel>
     </Border>
 </Window>

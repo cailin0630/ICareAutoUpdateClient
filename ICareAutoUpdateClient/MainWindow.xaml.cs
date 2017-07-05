@@ -22,9 +22,9 @@ namespace ICareAutoUpdateClient
         {
             InitializeComponent();
             
-            Icon = new BitmapImage(new Uri(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Image\\MainLogo.jpg")));
-            Task.Factory.StartNew(StartUpdate);
-            Logger.Main.Info("程序启动完成");
+            //Icon = new BitmapImage(new Uri(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Image\\MainLogo.jpg")));
+            //Task.Factory.StartNew(StartUpdate);
+            //Logger.Main.Info("程序启动完成");
             
         }
 
