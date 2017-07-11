@@ -1,4 +1,3 @@
-using GalaSoft.MvvmLight;
 using ICareAutoUpdateClient.Common;
 using ICareAutoUpdateClient.Log;
 using Newtonsoft.Json;
@@ -18,6 +17,10 @@ namespace ICareAutoUpdateClient.ViewModel
     {
         public MainViewModel()
         {
+        }
+
+        protected override void OnLoad()
+        {
             Task.Factory.StartNew(StartUpdate);
         }
 
@@ -29,9 +32,14 @@ namespace ICareAutoUpdateClient.ViewModel
             {
                 Logger.Main.Info("程序启动完成");
                 var pargs = Environment.GetCommandLineArgs();
-                if (pargs.Length < 4)
+
+                foreach (var p in pargs)
                 {
-                    AppendText($"启动参数错误:{pargs[0]}");
+                    Logger.Main.Info($"CommandLineArgs:{p}");
+                }
+                if (pargs.Length < 2 || pargs[1] == null)
+                {
+                    AppendText($"启动参数错误");
                     ShutDownApp();
                     return;
                 }
@@ -40,9 +48,9 @@ namespace ICareAutoUpdateClient.ViewModel
                 {
                     _message = new Message
                     {
-                        LocalUrl = pargs[1].TrimEnd('\\'),
-                        UpdateUrl = pargs[2],
-                        PublicLibUrl = pargs[3]
+                        LocalUrl = pargs[1].Split('|')[0].TrimEnd('\\'),
+                        UpdateUrl = pargs[1].Split('|')[1],
+                        PublicLibUrl = pargs[1].Split('|')[2]
                     };
 
                     Logger.Main.Info($"获取命令行参数:{JsonConvert.SerializeObject(_message)}");
@@ -58,7 +66,7 @@ namespace ICareAutoUpdateClient.ViewModel
                 catch (Exception ex)
                 {
                     Logger.Main.Error($"参数解析异常:{ex.Message} {ex.StackTrace}");
-                    AppendText($"启动参数错误:{pargs[1]}\n{pargs[2]}");
+                    AppendText($"启动参数错误");
                     ShutDownApp();
                     return;
                 }
@@ -185,8 +193,6 @@ namespace ICareAutoUpdateClient.ViewModel
                 Logger.Main.Error($"启动主程序异常:{ex.Message} {ex.StackTrace}");
                 AppendText("启动目标程序异常...");
             }
-           
-          
         }
 
         private void ShutDownApp()
@@ -222,7 +228,7 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _mainTitle = value;
-                //RaisePropertyChanged(nameof(MainTitle));
+
                 OnPropertyChanged();
             }
         }
@@ -235,7 +241,7 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _mainLogo = value;
-                //RaisePropertyChanged(nameof(MainLogo));
+
                 OnPropertyChanged();
             }
         }
@@ -248,7 +254,7 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _mainPackageDownload = value;
-                //RaisePropertyChanged(nameof(MainPackageDownload));
+
                 OnPropertyChanged();
             }
         }
@@ -261,7 +267,7 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _publibPackageDownload = value;
-                //RaisePropertyChanged(nameof(PublibPackageDownload));
+
                 OnPropertyChanged();
             }
         }
@@ -274,7 +280,7 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _mainPackageProgressPercentage = value;
-                //RaisePropertyChanged(nameof(MainPackageProgressPercentage));
+
                 OnPropertyChanged();
             }
         }
@@ -287,7 +293,7 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _publibPackageProgressPercentage = value;
-                //RaisePropertyChanged(nameof(PublibPackageProgressPercentage));
+
                 OnPropertyChanged();
             }
         }
@@ -300,7 +306,7 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _tipMessage = value;
-                //RaisePropertyChanged(nameof(TipMessage));
+
                 OnPropertyChanged();
             }
         }
