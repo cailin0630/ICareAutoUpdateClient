@@ -78,7 +78,7 @@
     <Compile Include="Common\PublibProvide.cs" />
     <Compile Include="Converter\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converter\PercentageToWidthConverter.cs" />
-    <Compile Include="Extension\ResourceEngine.cs" />
+    <Compile Include="Common\ResourceEngine.cs" />
     <Compile Include="Log\Logger.cs" />
     <Compile Include="UserControls\LoadCircle.xaml.cs">
       <DependentUpon>LoadCircle.xaml</DependentUpon>
