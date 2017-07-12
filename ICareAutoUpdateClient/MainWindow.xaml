@@ -14,50 +14,9 @@
         Background="Transparent"
         AllowsTransparency="True"
         OpacityMask="White"
-
-        xmlns:converters="clr-namespace:ICareAutoUpdateClient.Converter"
         Icon="{Binding MainLogo}"
         DataContext="{Binding Source={StaticResource Locator},Path=Main}">
 
-    <Window.Resources>
-        <ResourceDictionary>
-
-            <converters:PercentageToWidthConverter x:Key="PercentageToWidthConverter"></converters:PercentageToWidthConverter>
-            <Style  TargetType="TextBlock">
-                <Setter Property="Foreground" Value="#ffffff" />
-                <Setter Property="FontSize" Value="14" />
-                <Setter Property="FontFamily" Value="微软雅黑"></Setter>
-            </Style>
-            <Style TargetType="ProgressBar">
-                <Setter Property="Height" Value="12"></Setter>
-                <Setter Property="Width" Value="410"></Setter>
-
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ProgressBar}">
-                            <Grid>
-
-                                <Border CornerRadius="5">
-                                    <Border.Background>
-                                        <SolidColorBrush Color="#ffffff" />
-                                    </Border.Background>
-                                </Border>
-                                <Border
-                                    Margin="1,2"
-                                    CornerRadius="7"
-                                        HorizontalAlignment="Left"
-                                        Width="{Binding ProgressPercentageMin,Converter={StaticResource PercentageToWidthConverter}}">
-                                    <Border.Background>
-                                        <SolidColorBrush Color="#88bcff" />
-                                    </Border.Background>
-                                </Border>
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-        </ResourceDictionary>
-    </Window.Resources>
     <Grid>
         <Image Source="{Binding BackgroundImage}"></Image>
         <StackPanel>
@@ -89,60 +48,22 @@
                   Height="40"
                   Width="205">
             </Image>
-            <TextBlock Margin="54,50,0,0"
-                      Text="{Binding TipMessage}">
+            <TextBlock
+                Style="{StaticResource DefaultTextBlock}"
+                Margin="54,50,0,0"
+                Text="{Binding TipMessage}">
             </TextBlock>
             <StackPanel Orientation="Horizontal"
-                      
+
                        Margin="54,15,0,0">
-                <ProgressBar ></ProgressBar>
-                <TextBlock Margin="6,0,0,0">
+                <ProgressBar Style="{StaticResource CornerRadiusProgressBar}"></ProgressBar>
+                <TextBlock
+                    Style="{StaticResource DefaultTextBlock}"
+                    Margin="6,0,0,0">
                     <Run Text="{Binding ProgressPercentageMin}"></Run>
                     <Run>%</Run>
                 </TextBlock>
             </StackPanel>
         </StackPanel>
-
-        <!--<Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <StackPanel Name="MainStackPanel"
-                            Grid.Row="0"
-                            Orientation="Horizontal"
-                            Visibility="{Binding MainPackageDownload,Converter={StaticResource BooleanToVisibilityConverter},ConverterParameter=test}">
-                    <TextBlock Text="主程序更新包：" />
-                    <ProgressBar Name="MainProgressBar"
-                                 Value="{Binding MainPackageProgressPercentage}" />
-                    <TextBlock Name="MainTextBlock">
-                        <Run Text="{Binding PublibPackageProgressPercentage}"></Run>
-                        <Run>%</Run>
-                    </TextBlock>
-                </StackPanel>
-                <StackPanel Name="PublicStackPanel"
-                            Grid.Row="1"
-                            Orientation="Horizontal"
-                            Visibility="{Binding PublibPackageDownload,Converter={StaticResource BooleanToVisibilityConverter},ConverterParameter=test}">
-                    <TextBlock Text="公共库更新包：" />
-                    <ProgressBar Name="PublibProgressBar"
-                                 Value="{Binding PublibPackageProgressPercentage}" />
-                    <TextBlock Name="PublibTextBlock">
-                        <Run Text="{Binding PublibPackageProgressPercentage}"></Run>
-                        <Run>%</Run>
-                    </TextBlock>
-                </StackPanel>
-            </Grid>
-
-            <TextBox
-                    Name="TextBoxInput"
-                    Background="Transparent"
-                    Foreground="Chartreuse"
-                    FontSize="15"
-                    BorderThickness="0"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center"
-                    AutoWordSelection="True"
-                    Text="{Binding TipMessage}" />-->
     </Grid>
 </Window>
