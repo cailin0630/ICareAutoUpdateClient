@@ -218,6 +218,23 @@ namespace ICareAutoUpdateClient.ViewModel
             }
         }
 
+        private void GetProgressPercentageMin()
+        {
+            if (!MainPackageDownload && !PublibPackageDownload)
+            {
+                //todo 同时下载时
+                ProgressPercentageMin = Math.Min(MainPackageProgressPercentage, PublibPackageProgressPercentage);
+            }
+            else if(!MainPackageDownload && PublibPackageDownload)
+            {
+                //todo x主程序
+                ProgressPercentageMin = MainPackageProgressPercentage;
+            }
+            else
+            {
+                ProgressPercentageMin = PublibPackageProgressPercentage;
+            }
+        }
         #region MyRegion
 
         #region Image
@@ -325,9 +342,8 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _mainPackageProgressPercentage = value;
-                ProgressPercentageMax = value < PublibPackageProgressPercentage
-                    ? value
-                    : PublibPackageProgressPercentage;
+                GetProgressPercentageMin();
+
                 OnPropertyChanged();
             }
         }
@@ -340,21 +356,20 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _publibPackageProgressPercentage = value;
-                ProgressPercentageMax = value < MainPackageProgressPercentage
-                    ? value
-                    : MainPackageProgressPercentage;
+
+                GetProgressPercentageMin();
                 OnPropertyChanged();
             }
         }
 
-        private int _progressPercentageMax;
+        private int _progressPercentageMin;
 
-        public int ProgressPercentageMax
+        public int ProgressPercentageMin
         {
-            get { return _progressPercentageMax; }
+            get { return _progressPercentageMin; }
             set
             {
-                _progressPercentageMax = value;
+                _progressPercentageMin = value;
                 OnPropertyChanged();
             }
         }

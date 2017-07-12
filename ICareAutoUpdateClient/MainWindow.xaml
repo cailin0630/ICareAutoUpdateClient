@@ -46,7 +46,7 @@
                                     Margin="1,2"
                                     CornerRadius="7"
                                         HorizontalAlignment="Left"
-                                        Width="{Binding ProgressPercentageMax,Converter={StaticResource PercentageToWidthConverter}}">
+                                        Width="{Binding ProgressPercentageMin,Converter={StaticResource PercentageToWidthConverter}}">
                                     <Border.Background>
                                         <SolidColorBrush Color="#88bcff" />
                                     </Border.Background>
@@ -97,7 +97,7 @@
                        Margin="54,15,0,0">
                 <ProgressBar ></ProgressBar>
                 <TextBlock Margin="6,0,0,0">
-                    <Run Text="{Binding MainPackageProgressPercentage}"></Run>
+                    <Run Text="{Binding ProgressPercentageMin}"></Run>
                     <Run>%</Run>
                 </TextBlock>
             </StackPanel>
