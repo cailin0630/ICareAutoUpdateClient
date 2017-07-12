@@ -1,6 +1,5 @@
 using GalaSoft.MvvmLight.Command;
 using ICareAutoUpdateClient.Common;
-using ICareAutoUpdateClient.Extension;
 using ICareAutoUpdateClient.Log;
 using Newtonsoft.Json;
 using System;

@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace ICareAutoUpdateClient.Extension
+namespace ICareAutoUpdateClient.Common
 {
     public static class ResourceEngine
     {
