@@ -1,4 +1,6 @@
+using GalaSoft.MvvmLight.Command;
 using ICareAutoUpdateClient.Common;
+using ICareAutoUpdateClient.Extension;
 using ICareAutoUpdateClient.Log;
 using Newtonsoft.Json;
 using System;
@@ -8,8 +10,9 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace ICareAutoUpdateClient.ViewModel
 {
@@ -17,6 +20,8 @@ namespace ICareAutoUpdateClient.ViewModel
     {
         public MainViewModel()
         {
+            MinCommand = new RelayCommand(() => App.Current.MainWindow.WindowState = WindowState.Minimized, () => true);
+            CloseCommand = new RelayCommand(() => App.Current.Shutdown(), () => true);
         }
 
         protected override void OnLoad()
@@ -40,7 +45,7 @@ namespace ICareAutoUpdateClient.ViewModel
                 if (pargs.Length < 2 || pargs[1] == null)
                 {
                     AppendText($"启动参数错误");
-                    ShutDownApp();
+                    //ShutDownApp();
                     return;
                 }
 
@@ -67,11 +72,11 @@ namespace ICareAutoUpdateClient.ViewModel
                 {
                     Logger.Main.Error($"参数解析异常:{ex.Message} {ex.StackTrace}");
                     AppendText($"启动参数错误");
-                    ShutDownApp();
+                    //ShutDownApp();
                     return;
                 }
 
-                AppendText("开始更新...");
+                AppendText("正在更新中...");
                 ProcessProvide.KillProcess("IDCube");
                 TryDeleteTempFile();
 
@@ -104,7 +109,7 @@ namespace ICareAutoUpdateClient.ViewModel
             {
                 Logger.Main.Error($"更新异常:{ex.Message} {ex.StackTrace}");
                 AppendText($"更新异常:{ex.Message}");
-                ShutDownApp();
+                //ShutDownApp();
                 return;
             }
         }
@@ -121,13 +126,7 @@ namespace ICareAutoUpdateClient.ViewModel
 
         private void PubLibPackage_DownloadFileCompleted(object arg1, AsyncCompletedEventArgs arg2)
         {
-            //todo 下载文件完成后解压更新
-            AppendText("公共库更新下载完成...");
-
-            //AppendText(!ZipHelper.UnZipPath(Path.Combine(_message.LocalUrl, WebProvide.PubLibPackageName),
-            //    _pubLibExePath)
-            //    ? "公共库更新失败,原因:解压覆盖失败..."
-            //    : "公共库更新成功,解压覆盖完成...");
+            //AppendText("公共库更新下载完成...");
 
             //todo 解压并启动exe
             var pro = new Process
@@ -141,19 +140,20 @@ namespace ICareAutoUpdateClient.ViewModel
             pro.Start();
             pro.WaitForExit();
             PublibPackageDownload = true;
-            AppendText("公共库更新成功...");
+            //AppendText("公共库更新成功...");
             Do();
         }
 
         private void MainPackage_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             //todo 下载文件完成后解压更新
-            AppendText("主程序更新下载完成...");
+            //AppendText("主程序更新下载完成...");
+            if (!ZipHelper.UnZipPath(FrameworkConst.MainPackagePath,
+                _message.LocalUrl))
+            {
+                AppendText("更新失败,原因:解压覆盖失败...");
+            }
 
-            AppendText(!ZipHelper.UnZipPath(FrameworkConst.MainPackagePath,
-                _message.LocalUrl)
-                ? "主程序更新失败,原因:解压覆盖失败..."
-                : "主程序更新成功,解压覆盖完成...");
             MainPackageDownload = true;
             Do();
         }
@@ -161,7 +161,7 @@ namespace ICareAutoUpdateClient.ViewModel
         private void AppendText(string msg)
         {
             Logger.Main.Info(msg);
-            TipMessage += $"[{DateTime.Now:yyyy:MM:dd HH:mm:ss}] {msg}\n";
+            TipMessage = $"{msg}";
 
 #if DEBUG
             Thread.Sleep(2000);
@@ -174,7 +174,7 @@ namespace ICareAutoUpdateClient.ViewModel
             {
                 if (!MainPackageDownload || !PublibPackageDownload) return;
                 StartMainProcess();
-                ShutDownApp();
+                //ShutDownApp();
             }
         }
 
@@ -186,7 +186,7 @@ namespace ICareAutoUpdateClient.ViewModel
                 var exeDir = Path.Combine(_message.LocalUrl, "IDCube");
 
                 ProcessProvide.StartProcess(exeName, exeDir);
-                AppendText("启动目标程序成功...");
+                AppendText("更新完成!");
             }
             catch (Exception ex)
             {
@@ -220,20 +220,61 @@ namespace ICareAutoUpdateClient.ViewModel
 
         #region MyRegion
 
-        public string _mainTitle = "ICare.AutoUpdateClient";
+        #region Image
 
-        public string MainTitle
+        public ImageSource _logoImage = ResourceEngine.GetImageSource("logo.png");
+
+        public ImageSource LogoImage
         {
-            get { return _mainTitle; }
+            get { return _logoImage; }
             set
             {
-                _mainTitle = value;
+                _logoImage = value;
 
                 OnPropertyChanged();
             }
         }
 
-        public ImageSource _mainLogo = new BitmapImage(new Uri(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Image\\MainLogo.jpg")));
+        public ImageSource _closeImage = ResourceEngine.GetImageSource("icon_cancel.png");
+
+        public ImageSource CloseImage
+        {
+            get { return _closeImage; }
+            set
+            {
+                _closeImage = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public ImageSource _minImage = ResourceEngine.GetImageSource("icon_small.png");
+
+        public ImageSource MinImage
+        {
+            get { return _minImage; }
+            set
+            {
+                _minImage = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public ImageSource _backgroundImage = ResourceEngine.GetImageSource("bg.png");
+
+        public ImageSource BackgroundImage
+        {
+            get { return _backgroundImage; }
+            set
+            {
+                _backgroundImage = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public ImageSource _mainLogo = ResourceEngine.GetImageSource("MainLogo.jpg");
 
         public ImageSource MainLogo
         {
@@ -246,7 +287,11 @@ namespace ICareAutoUpdateClient.ViewModel
             }
         }
 
-        public bool _mainPackageDownload = false;
+        #endregion Image
+
+        #region download
+
+        private bool _mainPackageDownload = false;
 
         public bool MainPackageDownload
         {
@@ -259,7 +304,7 @@ namespace ICareAutoUpdateClient.ViewModel
             }
         }
 
-        public bool _publibPackageDownload = false;
+        private bool _publibPackageDownload = false;
 
         public bool PublibPackageDownload
         {
@@ -272,7 +317,7 @@ namespace ICareAutoUpdateClient.ViewModel
             }
         }
 
-        public int _mainPackageProgressPercentage;
+        private int _mainPackageProgressPercentage;
 
         public int MainPackageProgressPercentage
         {
@@ -280,12 +325,14 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _mainPackageProgressPercentage = value;
-
+                ProgressPercentageMax = value < PublibPackageProgressPercentage
+                    ? value
+                    : PublibPackageProgressPercentage;
                 OnPropertyChanged();
             }
         }
 
-        public int _publibPackageProgressPercentage;
+        private int _publibPackageProgressPercentage;
 
         public int PublibPackageProgressPercentage
         {
@@ -293,12 +340,26 @@ namespace ICareAutoUpdateClient.ViewModel
             set
             {
                 _publibPackageProgressPercentage = value;
-
+                ProgressPercentageMax = value < MainPackageProgressPercentage
+                    ? value
+                    : MainPackageProgressPercentage;
                 OnPropertyChanged();
             }
         }
 
-        public string _tipMessage;
+        private int _progressPercentageMax;
+
+        public int ProgressPercentageMax
+        {
+            get { return _progressPercentageMax; }
+            set
+            {
+                _progressPercentageMax = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _tipMessage;
 
         public string TipMessage
         {
@@ -307,6 +368,32 @@ namespace ICareAutoUpdateClient.ViewModel
             {
                 _tipMessage = value;
 
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion download
+
+        private ICommand _minCommand;
+
+        public ICommand MinCommand
+        {
+            get { return _minCommand; }
+            set
+            {
+                _minCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ICommand _closeCommand;
+
+        public ICommand CloseCommand
+        {
+            get { return _closeCommand; }
+            set
+            {
+                _closeCommand = value;
                 OnPropertyChanged();
             }
         }

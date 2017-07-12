@@ -22,4 +22,6 @@ namespace ICareAutoUpdateClient.Converter
             return value is Visibility && (Visibility) value == Visibility.Visible;
         }
     }
+
+  
 }
