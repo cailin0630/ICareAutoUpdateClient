@@ -126,18 +126,26 @@ namespace ICareAutoUpdateClient.ViewModel
         private void PubLibPackage_DownloadFileCompleted(object arg1, AsyncCompletedEventArgs arg2)
         {
             //AppendText("公共库更新下载完成...");
+            if (arg2.Error != null)
+            {
+                //todo 异常处理
+                AppendText($"公共库下载异常:{arg2.Error.Message}");
+                Logger.Main.Error($"公共库下载异常:{arg2.Error.Message} {arg2.Error.InnerException}");
+                return;
+            }
 
             //todo 解压并启动exe
             var pro = new Process
             {
                 StartInfo =
-                {
-                    FileName = FrameworkConst.PubLibPackagePath,
-                }
+                    {
+                        FileName = FrameworkConst.PubLibPackagePath,
+                    }
             };
 
             pro.Start();
             pro.WaitForExit();
+
             PublibPackageDownload = true;
             //AppendText("公共库更新成功...");
             Do();
@@ -147,6 +155,14 @@ namespace ICareAutoUpdateClient.ViewModel
         {
             //todo 下载文件完成后解压更新
             //AppendText("主程序更新下载完成...");
+            if (e.Error != null)
+            {
+                //todo 异常处理
+                AppendText($"主程序下载异常:{e.Error.Message}");
+                Logger.Main.Error($"主程序下载异常:{e.Error.Message} {e.Error.InnerException}");
+                return;
+            }
+
             if (!ZipHelper.UnZipPath(FrameworkConst.MainPackagePath,
                 _message.LocalUrl))
             {
@@ -224,7 +240,7 @@ namespace ICareAutoUpdateClient.ViewModel
                 //todo 同时下载时
                 ProgressPercentageMin = Math.Min(MainPackageProgressPercentage, PublibPackageProgressPercentage);
             }
-            else if(!MainPackageDownload && PublibPackageDownload)
+            else if (!MainPackageDownload && PublibPackageDownload)
             {
                 //todo x主程序
                 ProgressPercentageMin = MainPackageProgressPercentage;
@@ -234,6 +250,7 @@ namespace ICareAutoUpdateClient.ViewModel
                 ProgressPercentageMin = PublibPackageProgressPercentage;
             }
         }
+
         #region MyRegion
 
         #region Image
