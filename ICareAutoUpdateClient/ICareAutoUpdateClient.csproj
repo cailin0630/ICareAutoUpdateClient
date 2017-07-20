@@ -76,6 +76,7 @@
     </ApplicationDefinition>
     <Compile Include="Common\FrameworkConst.cs" />
     <Compile Include="Common\PublibProvide.cs" />
+    <Compile Include="Common\Result.cs" />
     <Compile Include="Converter\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converter\PercentageToWidthConverter.cs" />
     <Compile Include="Common\ResourceEngine.cs" />

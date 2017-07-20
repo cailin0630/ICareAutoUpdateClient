@@ -4,7 +4,7 @@ namespace ICareAutoUpdateClient.Common
 {
     public class ProcessProvide
     {
-        public static bool KillProcess(string destProcessName)
+        public static void KillProcess(string destProcessName)
         {
             var allProc = Process.GetProcesses();
             foreach (var pro in allProc)
@@ -12,10 +12,10 @@ namespace ICareAutoUpdateClient.Common
                 if (pro.ProcessName == destProcessName)
                     pro.Kill();
             }
-            return true;
+           
         }
 
-        public static bool StartProcess(string fileName, string workingDirectory, string args = "")
+        public static void StartProcess(string fileName, string workingDirectory, string args = "")
         {
             var pro = new Process
             {
@@ -26,7 +26,7 @@ namespace ICareAutoUpdateClient.Common
                     Arguments = args
                 }
             };
-            return pro.Start();
+            pro.Start();
         }
     }
 }
